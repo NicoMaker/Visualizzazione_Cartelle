@@ -1,0 +1,13 @@
+{
+  "name": "visualizzazione-cartella",
+  "version": "1.0.0",
+  "description": "Web app per visualizzare e scaricare file e cartelle.",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js"
+  },
+  "dependencies": {
+    "express": "^4.18.2"
+  },
+  "rootDir": "C:/Users/Marano Nicola/Documents/Corso ITS Front End"
+} 

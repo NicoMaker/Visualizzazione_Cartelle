@@ -1,0 +1,152 @@
+.topbar {
+  width: 100vw;
+  min-width: 320px;
+  background: linear-gradient(90deg, #2a7ae2 0%, #6b8cff 100%);
+  color: #fff;
+  padding: 0.7em 0 0.7em 0;
+  display: flex;
+  align-items: center;
+  box-shadow: 0 2px 12px rgba(44, 62, 80, 0.08);
+  position: sticky;
+  top: 0;
+  z-index: 10;
+}
+.app-icon {
+  font-size: 1.7em;
+  margin-left: 32px;
+  margin-right: 12px;
+}
+.app-title {
+  font-size: 1.25em;
+  font-weight: 600;
+  letter-spacing: 1px;
+}
+#breadcrumb {
+  margin-bottom: 18px;
+  font-size: 1.05em;
+  color: #2a7ae2;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 4px;
+}
+.breadcrumb-sep {
+  color: #b6c3e6;
+  margin: 0 2px;
+}
+.breadcrumb-link {
+  color: #2a7ae2;
+  text-decoration: none;
+  font-weight: 500;
+  transition: text-decoration 0.15s, color 0.15s;
+  border-radius: 4px;
+  padding: 1px 5px;
+}
+.breadcrumb-link:hover {
+  text-decoration: underline;
+  background: #eaf1ff;
+}
+#status-message {
+  margin-top: 18px;
+  color: #e74c3c;
+  font-size: 1.08em;
+  text-align: center;
+  min-height: 24px;
+}
+/* Restyling container for more elegance */
+.container {
+  max-width: 800px;
+  margin: 48px auto;
+  background: #fff;
+  border-radius: 18px;
+  box-shadow: 0 8px 32px rgba(44, 62, 80, 0.13);
+  padding: 40px 32px 32px 32px;
+  position: relative;
+}
+h1 {
+  text-align: center;
+  color: #2a3a4b;
+  margin-bottom: 36px;
+  font-size: 2.2rem;
+  letter-spacing: 1px;
+}
+#tree-container {
+  font-size: 1.13rem;
+  margin-top: 10px;
+}
+.folder, .file {
+  display: flex;
+  align-items: center;
+  padding: 7px 0 7px 12px;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: background 0.18s, box-shadow 0.18s;
+  position: relative;
+}
+.folder:hover, .file:hover {
+  background: #e0e7ff;
+  box-shadow: 0 2px 8px rgba(44, 62, 80, 0.07);
+}
+.folder {
+  font-weight: 600;
+  color: #2a7ae2;
+  font-size: 1.08em;
+}
+.file {
+  color: #444;
+  font-weight: 400;
+  font-size: 1em;
+}
+.tree-children {
+  margin-left: 28px;
+  border-left: 2px dashed #b6c3e6;
+  padding-left: 14px;
+}
+.download-link {
+  margin-left: 14px;
+  color: #2a7ae2;
+  text-decoration: none;
+  font-size: 0.97em;
+  opacity: 0.8;
+  transition: opacity 0.15s, color 0.15s;
+  border-radius: 4px;
+  padding: 2px 7px;
+  background: #eaf1ff;
+  font-weight: 500;
+}
+.download-link:hover {
+  opacity: 1;
+  color: #fff;
+  background: #2a7ae2;
+  text-decoration: none;
+}
+.folder-toggle {
+  margin-right: 10px;
+  font-size: 1.2em;
+  user-select: none;
+  color: #7b8bb7;
+  transition: color 0.15s;
+}
+.folder:hover .folder-toggle {
+  color: #2a7ae2;
+}
+.folder::before {
+  content: '\1F4C1'; /* cartella */
+  margin-right: 8px;
+  font-size: 1.1em;
+  opacity: 0.85;
+}
+.file::before {
+  content: '\1F4C4'; /* foglio */
+  margin-right: 8px;
+  font-size: 1.05em;
+  opacity: 0.7;
+}
+::-webkit-scrollbar {
+  width: 8px;
+  background: #e0e7ff;
+}
+::-webkit-scrollbar-thumb {
+  background: #b6c3e6;
+  border-radius: 8px;
+} 
