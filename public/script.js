@@ -45,6 +45,18 @@ function createTreeNode(node, parentPath = '') {
     nameSpan.textContent = node.name;
     nodeElement.appendChild(nameSpan);
     
+    // Bottone Scarica ZIP
+    const zipLink = document.createElement('a');
+    zipLink.className = 'download-link';
+    zipLink.href = `/api/download-folder?path=${encodeURIComponent(node.path)}`;
+    zipLink.textContent = '⬇ Scarica ZIP';
+    zipLink.setAttribute('download', node.name + '.zip');
+    zipLink.style.marginLeft = '10px';
+    zipLink.addEventListener('click', function(e) {
+      e.stopPropagation();
+    });
+    nodeElement.appendChild(zipLink);
+    
     // Container per i figli
     const childrenDiv = document.createElement('div');
     childrenDiv.className = 'tree-children';
@@ -222,6 +234,21 @@ async function renderTree(path = '') {
     if (backButton) {
       treeContainer.appendChild(backButton);
     }
+
+    // Aggiungi pulsante Scarica tutto in ZIP se non siamo nella root
+    const rootZipBtn = document.getElementById('download-root-zip');
+    if (rootZipBtn) {
+      const zipLink = document.createElement('a');
+      zipLink.className = 'download-link';
+      zipLink.href = `/api/download-folder?path=${encodeURIComponent(path)}`;
+      zipLink.textContent = '⬇ Scarica tutto in ZIP';
+      zipLink.setAttribute('download', 'tutto.zip');
+      zipLink.style.marginLeft = '10px';
+      zipLink.addEventListener('click', function(e) {
+        e.stopPropagation();
+      });
+      treeContainer.appendChild(zipLink);
+    }
     
     // Verifica se la cartella è vuota
     if (tree.length === 0) {
@@ -312,6 +339,16 @@ document.addEventListener('DOMContentLoaded', () => {
       e.target.title = 'Torna alla cartella precedente (Esc)';
     }
   });
+
+  // Gestione bottone Scarica tutto in ZIP
+  const rootZipBtn = document.getElementById('download-root-zip');
+  if (rootZipBtn) {
+    rootZipBtn.addEventListener('click', function() {
+      // Scarica la cartella corrente (root o sottocartella)
+      const zipUrl = `/api/download-folder?path=${encodeURIComponent(currentPath)}`;
+      window.location.href = zipUrl;
+    });
+  }
 });
 
 // Gestione errori globali

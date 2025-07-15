@@ -8,6 +8,7 @@
     "dev": "node --watch server.js"
   },
   "dependencies": {
+    "archiver": "^7.0.1",
     "express": "^4.18.2"
   },
   "rootDir": "C:/Users/Marano Nicola/Documents"

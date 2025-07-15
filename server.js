@@ -2,6 +2,7 @@ const express = require('express');
 const path = require('path');
 const fs = require('fs');
 const packageJson = require('./package.json');
+const archiver = require('archiver');
 
 const app = express();
 const PORT = 3000;
@@ -32,6 +33,11 @@ function getFolderTree(dirPath, basePath = ROOT_DIR) {
   });
 }
 
+// Utility per capire se rootDir è un link Google Drive
+function isGoogleDriveRoot(root) {
+  return typeof root === 'string' && root.startsWith('https://drive.google.com');
+}
+
 // API per ottenere la struttura della cartella
 app.get('/api/tree', (req, res) => {
   const rel = req.query.path || '';
@@ -59,6 +65,28 @@ app.get('/api/download', (req, res) => {
     return res.status(404).send('File not found');
   }
   res.download(absPath);
+});
+
+// API per scaricare una cartella come ZIP (solo locale)
+app.get('/api/download-folder', (req, res) => {
+  if (isGoogleDriveRoot(packageJson.rootDir)) {
+    return res.status(501).send('Download ZIP di cartelle Google Drive non ancora supportato');
+  }
+  let rel = req.query.path || '';
+  const absPath = path.join(ROOT_DIR, rel);
+  if (!absPath.startsWith(ROOT_DIR)) {
+    return res.status(400).send('Invalid path');
+  }
+  if (!fs.existsSync(absPath) || !fs.statSync(absPath).isDirectory()) {
+    return res.status(404).send('Folder not found');
+  }
+  // Nome zip: se root, "Tutto.zip", altrimenti nome cartella
+  const zipName = rel === '' ? 'Tutto.zip' : `${path.basename(absPath)}.zip`;
+  res.setHeader('Content-Disposition', `attachment; filename="${zipName}"`);
+  const archive = archiver('zip', { zlib: { level: 9 } });
+  archive.directory(absPath, false);
+  archive.pipe(res);
+  archive.finalize();
 });
 
 app.listen(PORT, () => {
