@@ -89,6 +89,47 @@ app.get('/api/download-folder', (req, res) => {
   archive.finalize();
 });
 
+// --- API ricerca file/cartelle ---
+function searchInTree(dirPath, query, basePath = ROOT_DIR) {
+  const items = fs.readdirSync(dirPath, { withFileTypes: true });
+  let results = [];
+  for (const item of items) {
+    const fullPath = path.join(dirPath, item.name);
+    const relPath = path.relative(basePath, fullPath);
+    if (item.name.toLowerCase().includes(query.toLowerCase())) {
+      if (item.isDirectory()) {
+        results.push({
+          name: item.name,
+          type: 'folder',
+          path: relPath,
+          children: []
+        });
+      } else {
+        results.push({
+          name: item.name,
+          type: 'file',
+          path: relPath
+        });
+      }
+    }
+    if (item.isDirectory()) {
+      results = results.concat(searchInTree(fullPath, query, basePath));
+    }
+  }
+  return results;
+}
+
+app.get('/api/search', (req, res) => {
+  const q = req.query.q || '';
+  if (!q.trim()) return res.json({ results: [] });
+  try {
+    const results = searchInTree(ROOT_DIR, q.trim());
+    res.json({ results });
+  } catch (err) {
+    res.status(500).json({ error: 'Errore nella ricerca' });
+  }
+});
+
 app.listen(PORT, () => {
   console.log(`Server running on http://localhost:${PORT}`);
 }); 
