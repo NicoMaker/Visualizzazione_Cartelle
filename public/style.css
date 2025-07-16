@@ -455,6 +455,12 @@ body {
   color: white;
 }
 
+.file-item:hover .download-btn {
+  background: transparent;
+  border-color: white;
+  color: white; /* Ensure text is white */
+}
+
 .file-item:hover * {
   color: white;
   z-index: 1;
