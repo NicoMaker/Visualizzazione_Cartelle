@@ -22,6 +22,53 @@ async function fetchTree(path = '') {
   }
 }
 
+// Funzione per filtrare l'albero in base alla ricerca
+function filterTree(tree, query) {
+  if (!query) return tree;
+  const lowerQuery = query.toLowerCase();
+  function filterNode(node) {
+    if (node.type === 'folder') {
+      const filteredChildren = (node.children || []).map(filterNode).filter(Boolean);
+      if (filteredChildren.length > 0 || node.name.toLowerCase().includes(lowerQuery)) {
+        return { ...node, children: filteredChildren };
+      }
+      return null;
+    } else {
+      return node.name.toLowerCase().includes(lowerQuery) ? node : null;
+    }
+  }
+  return tree.map(filterNode).filter(Boolean);
+}
+
+// Gestione ricerca
+let fullTreeCache = [];
+const searchInput = document.getElementById('search-input');
+if (searchInput) {
+  searchInput.addEventListener('input', function () {
+    const query = searchInput.value.trim();
+    const filtered = filterTree(fullTreeCache, query);
+    renderFilteredTree(filtered);
+  });
+}
+
+// Rendering dell'albero filtrato
+function renderFilteredTree(tree) {
+  const container = document.getElementById('tree-container');
+  container.innerHTML = '';
+  // Mostra il pulsante Torna indietro solo se non siamo nella root
+  if (currentPath && currentPath !== '') {
+    const backButton = createBackButton();
+    if (backButton) container.appendChild(backButton);
+  }
+  if (!tree || tree.length === 0) {
+    container.innerHTML += '<div class="empty-state">Nessun risultato trovato.</div>';
+    return;
+  }
+  tree.forEach(node => {
+    container.appendChild(createTreeNode(node));
+  });
+}
+
 // Creazione di un nodo dell'albero
 function createTreeNode(node, parentPath = '') {
   const nodeElement = document.createElement('div');
@@ -49,8 +96,9 @@ function createTreeNode(node, parentPath = '') {
     const zipLink = document.createElement('a');
     zipLink.className = 'download-link';
     zipLink.href = `/api/download-folder?path=${encodeURIComponent(node.path)}`;
-    zipLink.textContent = '⬇ Scarica ZIP';
+    zipLink.textContent = 'ZIP';
     zipLink.setAttribute('download', node.name + '.zip');
+    zipLink.title = 'Scarica cartella come ZIP';
     zipLink.style.marginLeft = '10px';
     zipLink.addEventListener('click', function (e) {
       e.stopPropagation();
@@ -101,8 +149,9 @@ function createTreeNode(node, parentPath = '') {
     const downloadLink = document.createElement('a');
     downloadLink.className = 'download-link';
     downloadLink.href = `/api/download?path=${encodeURIComponent(node.path)}`;
-    downloadLink.textContent = '⬇ Scarica';
+    downloadLink.textContent = 'Scarica';
     downloadLink.setAttribute('download', node.name);
+    downloadLink.title = 'Scarica file';
 
     // Previeni la propagazione del click
     downloadLink.addEventListener('click', function (e) {
@@ -263,68 +312,18 @@ function createBackButton() {
   return backButton;
 }
 
-// Rendering dell'albero
+// Modifica renderTree per salvare il fullTreeCache
 async function renderTree(path = '') {
-  const treeContainer = document.getElementById('tree-container');
-  const statusMessage = document.getElementById('status-message');
-
-  // Mostra loading
-  treeContainer.innerHTML = '<div class="loading">Caricamento in corso...</div>';
-  statusMessage.textContent = '';
-
+  const container = document.getElementById('tree-container');
+  container.innerHTML = '<div class="loading">Caricamento...</div>';
   try {
     const tree = await fetchTree(path);
-    treeContainer.innerHTML = '';
-
-    // Aggiungi pulsante back se non siamo nella root
-    const backButton = createBackButton();
-    if (backButton) {
-      treeContainer.appendChild(backButton);
-    }
-
-    // Aggiungi pulsante Scarica tutto in ZIP se non siamo nella root
-    const rootZipBtn = document.getElementById('download-root-zip');
-    if (rootZipBtn) {
-      const zipLink = document.createElement('a');
-      zipLink.className = 'download-link';
-      zipLink.href = `/api/download-folder?path=${encodeURIComponent(path)}`;
-      zipLink.textContent = '⬇ Scarica tutto in ZIP';
-      zipLink.setAttribute('download', 'tutto.zip');
-      zipLink.style.marginLeft = '10px';
-      zipLink.addEventListener('click', function (e) {
-        e.stopPropagation();
-      });
-      treeContainer.appendChild(zipLink);
-    }
-
-    // Verifica se la cartella è vuota
-    if (tree.length === 0) {
-      const emptyState = document.createElement('div');
-      emptyState.className = 'empty-state';
-      emptyState.textContent = 'Nessun file o cartella presente in questa directory.';
-      treeContainer.appendChild(emptyState);
-    } else {
-      // Aggiungi i nodi dell'albero
-      tree.forEach((node, index) => {
-        const nodeElement = createTreeNode(node, path);
-        nodeElement.style.animationDelay = `${index * 0.1}s`;
-        treeContainer.appendChild(nodeElement);
-      });
-    }
-
-    // Aggiorna breadcrumb e percorso corrente
+    fullTreeCache = tree;
+    renderFilteredTree(tree);
     renderBreadcrumb(path);
     currentPath = path;
-
-    // Aggiungi alla cronologia se non è già presente
-    if (navigationHistory[navigationHistory.length - 1] !== path) {
-      navigationHistory.push(path);
-    }
-
   } catch (error) {
-    treeContainer.innerHTML = '';
-    statusMessage.textContent = `Errore: ${error.message}`;
-    console.error('Errore nel rendering dell\'albero:', error);
+    container.innerHTML = '<div class="empty-state">Errore nel caricamento della cartella.</div>';
   }
 }
 
