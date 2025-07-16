@@ -11,5 +11,21 @@
     "archiver": "^7.0.1",
     "express": "^4.18.2"
   },
-  "rootDir": "C:/Users"
+  "rootDir": "C:/Users",
+  "keywords": [
+    "file-explorer",
+    "file-browser",
+    "file-manager",
+    "folder-browser",
+    "web-file-explorer",
+    "express-file-server",
+    "download-files",
+    "zip-folder",
+    "modern-ui",
+    "file-download",
+    "express",
+    "archiver",
+    "nodejs",
+    "web-app"
+  ]
 }
