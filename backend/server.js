@@ -9,7 +9,7 @@ const PORT = process.env.PORT || 3000;
 const ROOT_DIR = path.resolve(packageJson.rootDir || __dirname);
 
 // Serve static files
-app.use(express.static(path.join(__dirname, "public")));
+app.use(express.static(path.join(__dirname, "../frontend")));
 app.use(express.json());
 
 // Enhanced folder tree function with file stats
